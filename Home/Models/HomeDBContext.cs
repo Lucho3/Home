@@ -41,7 +41,17 @@ namespace Home.Models
                             .Property(b => b.type)
                             .HasDefaultValueSql("3");
 
+            //Cascade
 
+            modelBuilder.Entity<UserModel>().HasMany(r => r.tasks).WithOne(r => r.user).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserModel>().HasMany(t => t.locations).WithOne(r => r.user).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<LocationModel>().HasMany(t => t.tasks).WithOne(u => u.location).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CategoryModel>().HasMany(t => t.tasks).WithOne(u => u.category).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<StatusModel>().HasMany(t => t.tasks).WithOne(u => u.status).OnDelete(DeleteBehavior.Cascade);           
         }
 
 
