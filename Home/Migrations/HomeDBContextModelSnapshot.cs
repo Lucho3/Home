@@ -146,6 +146,10 @@ namespace Home.Migrations
                     b.Property<int>("locationid")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("picture")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<int>("statusid")
                         .HasColumnType("int");
 

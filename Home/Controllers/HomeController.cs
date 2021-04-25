@@ -1,10 +1,13 @@
 ﻿using Home.Models;
+using Home.Models.Entity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Home.Controllers
@@ -13,19 +16,38 @@ namespace Home.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly HomeDBContext _context;
+
+        private UserModel user;
+
+        private int userId = 0;
+
+        public HomeController(HomeDBContext context, ILogger<HomeController> logger)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            byte[] buffer = new byte[200];
+            if (HttpContext.Session.TryGetValue("id", out buffer))
+            {
+                userId = int.Parse(Encoding.UTF8.GetString(buffer));
+                user = await _context.Users.FirstOrDefaultAsync(u => u.id == userId);
+                ViewData["Full name"] = user.firstName + " " + user.lastName;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Index", "LogIn");
+            }
         }
 
-        public IActionResult Privacy()
+        public IActionResult LogOut()
         {
-            return View();
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "LogIn");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -102,7 +102,8 @@ namespace Home.Migrations
                     deadline = table.Column<DateTime>(type: "date", nullable: false),
                     budget = table.Column<decimal>(type: "decimal", nullable: false),
                     categoryid = table.Column<int>(type: "int", nullable: false),
-                    statusid = table.Column<int>(type: "int", nullable: false)
+                    statusid = table.Column<int>(type: "int", nullable: false),
+                    picture = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {

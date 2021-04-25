@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Home.Migrations
 {
     [DbContext(typeof(HomeDBContext))]
-    [Migration("20210425085419_InitialCreate")]
+    [Migration("20210425093900_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,6 +147,10 @@ namespace Home.Migrations
 
                     b.Property<int>("locationid")
                         .HasColumnType("int");
+
+                    b.Property<byte[]>("picture")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("statusid")
                         .HasColumnType("int");
