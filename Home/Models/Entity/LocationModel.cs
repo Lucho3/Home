@@ -9,6 +9,10 @@ namespace Home.Models.Entity
 {
     public class LocationModel
     {
+        public LocationModel()
+        {
+            this.tasks = new HashSet<TaskModel>();
+        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column(TypeName = "int")]
@@ -22,6 +26,9 @@ namespace Home.Models.Entity
         [Required(ErrorMessage = "Address is required field!")]
         public string address { get; set; }
 
+        [Required(ErrorMessage = "User is required field!")]
         public UserModel user { get; set; }
+
+        public virtual ICollection<TaskModel> tasks { get; set; }
     }
 }

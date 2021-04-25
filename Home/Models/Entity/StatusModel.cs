@@ -9,6 +9,10 @@ namespace Home.Models.Entity
 {
     public class StatusModel
     {
+        public StatusModel()
+        {
+            this.tasks = new HashSet<TaskModel>();
+        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column(TypeName = "int")]
@@ -17,6 +21,8 @@ namespace Home.Models.Entity
         [Column(TypeName = "nvarchar(200)")]
         [Required]
         public string status { get; set; }
+
+        public virtual ICollection<TaskModel> tasks { get; set; }
 
     }
 }
