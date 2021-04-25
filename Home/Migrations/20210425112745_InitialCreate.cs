@@ -96,6 +96,7 @@ namespace Home.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    name = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
                     userid = table.Column<int>(type: "int", nullable: false),
                     locationid = table.Column<int>(type: "int", nullable: false),
@@ -103,7 +104,7 @@ namespace Home.Migrations
                     budget = table.Column<decimal>(type: "decimal", nullable: false),
                     categoryid = table.Column<int>(type: "int", nullable: false),
                     statusid = table.Column<int>(type: "int", nullable: false),
-                    picture = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                    picture = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -152,7 +153,8 @@ namespace Home.Migrations
                     { 1, "Waiting" },
                     { 2, "Appointed as a domestic helper" },
                     { 3, "Fulfilled" },
-                    { 4, "Refused" }
+                    { 4, "Refused" },
+                    { 5, "For review" }
                 });
 
             migrationBuilder.InsertData(

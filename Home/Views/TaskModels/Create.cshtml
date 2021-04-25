@@ -15,22 +15,22 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for=@Model.task.name class="control-label"></label>
-                <input asp-for=@Model.task.name class="form-control" />
+                <input asp-for=@Model.task.name name="name" class="form-control" />
                 <span asp-validation-for=@Model.task.name class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for=@Model.task.description class="control-label"></label>
-                <input asp-for=@Model.task.description class="form-control" />
+                <input asp-for=@Model.task.description name="desc" class="form-control" />
                 <span asp-validation-for=@Model.task.description class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for=@Model.task.deadline class="control-label"></label>
-                <input asp-for=@Model.task.deadline class="form-control" />
+                <input asp-for=@Model.task.deadline type="date" id="inputDate" name="deadline" class="form-control" />
                 <span asp-validation-for=@Model.task.deadline class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for=@Model.task.budget class="control-label"></label>
-                <input asp-for="@Model.task.budget class=" form-control" />
+                <input asp-for=@Model.task.budget type="number" name="budget" class="form-control" />
                 <span asp-validation-for="@Model.task.budget class=" text-danger"></span>
             </div>
 
@@ -41,7 +41,7 @@
                     <select style="display:inline;" name="Locations">
                         @foreach (var item in Model.locations)
                         {
-                            <option value=@item>@item.name</option>
+                            <option value=@item.name>@item.name</option>
                         }
                     </select>
                 }
@@ -53,12 +53,12 @@
 
             <div>
                 <label class="control-label">Chose Category:</label>
-                @if (Model.locations.Count() > 0)
+                @if (Model.categories.Count() > 0)
                 {
                     <select style="display:inline;" name="Categories">
                         @foreach (var item in Model.categories)
                         {
-                            <option value=@item>@item.type</option>
+                            <option value=@item.type>@item.type</option>
                         }
                     </select>
                 }
@@ -77,6 +77,26 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+        function mindate(input) {
+        var today = new Date();
+        var dd = today.getDate() + 1;
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+
+        startdate = yyyy + '-' + mm + '-' + dd;
+        document.getElementById(input).setAttribute("min", startdate);
+    }
+
+    window.onload = mindate("inputDate");
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

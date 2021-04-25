@@ -62,6 +62,50 @@ namespace Home.Controllers
             }
         }
 
+        public async Task<IActionResult> MyTasks()
+        {
+            if (await extractUser())
+            {
+                List<TaskModel> tm = await _context.Tasks.Include(u => u.user).Include(u=>u.status).Where(u => u.user == this.user).ToListAsync(); ;
+
+                return View(tm);
+            }
+            else
+            {
+                return RedirectToAction("Index", "LogIn");
+            }
+        }
+        public async Task<IActionResult> Decline(int? id)
+        {
+            if (await extractUser())
+            {
+                TaskModel t = await _context.Tasks.Where(t => t.id == id).FirstOrDefaultAsync();
+                t.status = await _context.Statuses.Where(s => s.status == "Refused").FirstOrDefaultAsync();
+                List<TaskModel> tm = await _context.Tasks.Include(u => u.user).Include(u => u.status).Where(u => u.user == this.user).ToListAsync(); ;
+                await _context.SaveChangesAsync();
+                return View("MyTasks",tm);
+            }
+            else
+            {
+                return RedirectToAction("Index", "LogIn");
+            }
+        }
+
+        public async Task<IActionResult> Done(int? id)
+        {
+            if (await extractUser())
+            {
+                TaskModel t = await _context.Tasks.Where(t => t.id == id).FirstOrDefaultAsync();
+                t.status = await _context.Statuses.Where(s => s.status == "Fulfilled").FirstOrDefaultAsync();
+                List<TaskModel> tm = await _context.Tasks.Include(u => u.user).Include(u => u.status).Where(u => u.user == this.user).ToListAsync(); ;
+                await _context.SaveChangesAsync();
+                return View("MyTasks", tm);
+            }
+            else
+            {
+                return RedirectToAction("Index", "LogIn");
+            }
+        }
         // GET: TaskModels/Create
         public async Task<IActionResult> Create()
         {
@@ -70,7 +114,7 @@ namespace Home.Controllers
                 TaskCreateViewModel tcvm = new TaskCreateViewModel();
                 tcvm.categories = await _context.Categories.ToListAsync();
                 tcvm.locations = user.locations;
-                
+
                 return View(tcvm);
             }
             else
@@ -84,17 +128,33 @@ namespace Home.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,description,deadline,budget,picture")] TaskModel taskModel)
+        public async Task<IActionResult> Create(string name, string desc, DateTime deadline, decimal budget)
         {
             if (await extractUser())
             {
+                TaskModel tm = new TaskModel();
+                tm.name = name;
+                tm.description = desc;
+                tm.deadline = deadline;
+                tm.budget = budget;
+
+                string location = Request.Form["Locations"];
+                string category = Request.Form["Categories"];
+                tm.location = await _context.Locations.Where(l => l.name == location).FirstOrDefaultAsync();
+                tm.category = await _context.Categories.Where(c => c.type == category).FirstOrDefaultAsync();
+                tm.status = await _context.Statuses.Where(s => s.id == 1).FirstOrDefaultAsync();
+                tm.user = this.user;
+
                 if (ModelState.IsValid)
                 {
-                    _context.Add(taskModel);
+                    _context.Add(tm);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                return View(taskModel);
+                TaskCreateViewModel tcvm = new TaskCreateViewModel();
+                tcvm.categories = await _context.Categories.ToListAsync();
+                tcvm.locations = user.locations;
+                return View(tcvm);
             }
             else
             {
@@ -117,7 +177,12 @@ namespace Home.Controllers
                 {
                     return NotFound();
                 }
-                return View(taskModel);
+                 TaskCreateViewModel tcvm = new TaskCreateViewModel();
+                tcvm.categories = await _context.Categories.ToListAsync();
+                tcvm.locations = user.locations;
+                tcvm.task = await _context.Tasks.Where(t => t.id == id).FirstOrDefaultAsync();
+                return View(tcvm);
+ 
             }
             else
             {
@@ -130,11 +195,13 @@ namespace Home.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,description,deadline,budget,picture")] TaskModel taskModel)
+        public async Task<IActionResult> Edit(int id, string name, string desc, DateTime deadline, decimal budget)
         {
             if (await extractUser())
             {
-                if (id != taskModel.id)
+                TaskModel tm =await _context.Tasks.Where(t=>t.id==id).FirstOrDefaultAsync();
+                
+                if (id != tm.id)
                 {
                     return NotFound();
                 }
@@ -143,12 +210,23 @@ namespace Home.Controllers
                 {
                     try
                     {
-                        _context.Update(taskModel);
+                        tm.name = name;
+                        tm.description = desc;
+                        tm.deadline = deadline;
+                        tm.budget = budget;
+
+                        string location = Request.Form["Locations"];
+                        string category = Request.Form["Categories"];
+                        tm.location = await _context.Locations.Where(l => l.name == location).FirstOrDefaultAsync();
+                        tm.category = await _context.Categories.Where(c => c.type == category).FirstOrDefaultAsync();
+                        tm.status = await _context.Statuses.Where(s => s.id == 1).FirstOrDefaultAsync();
+                        tm.user = this.user;
+                        _context.Update(tm);
                         await _context.SaveChangesAsync();
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!TaskModelExists(taskModel.id))
+                        if (!TaskModelExists(tm.id))
                         {
                             return NotFound();
                         }
@@ -159,7 +237,11 @@ namespace Home.Controllers
                     }
                     return RedirectToAction(nameof(Index));
                 }
-                return View(taskModel);
+                TaskCreateViewModel tcvm = new TaskCreateViewModel();
+                tcvm.categories = await _context.Categories.ToListAsync();
+                tcvm.locations = user.locations;
+                tcvm.task = await _context.Tasks.Where(t => t.id == id).FirstOrDefaultAsync();
+                return View(tcvm);
             }
             else
             {

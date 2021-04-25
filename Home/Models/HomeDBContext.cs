@@ -31,7 +31,9 @@ namespace Home.Models
                new StatusModel { id = 1, status = "Waiting" },
                new StatusModel { id = 2, status = "Appointed as a domestic helper" },
                new StatusModel { id = 3, status = "Fulfilled" },
-               new StatusModel { id = 4, status = "Refused" });
+               new StatusModel { id = 4, status = "Refused" },
+                new StatusModel { id = 5, status = "For review" });
+              
 
             modelBuilder.Entity<UserModel>().HasIndex(u => u.username).IsUnique();
 

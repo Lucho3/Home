@@ -120,6 +120,11 @@ namespace Home.Migrations
                         {
                             id = 4,
                             status = "Refused"
+                        },
+                        new
+                        {
+                            id = 5,
+                            status = "For review"
                         });
                 });
 

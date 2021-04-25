@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Home.Migrations
 {
     [DbContext(typeof(HomeDBContext))]
-    [Migration("20210425093900_InitialCreate")]
+    [Migration("20210425112745_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -122,6 +122,11 @@ namespace Home.Migrations
                         {
                             id = 4,
                             status = "Refused"
+                        },
+                        new
+                        {
+                            id = 5,
+                            status = "For review"
                         });
                 });
 
@@ -148,8 +153,11 @@ namespace Home.Migrations
                     b.Property<int>("locationid")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("picture")
+                    b.Property<string>("name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<byte[]>("picture")
                         .HasColumnType("varbinary(max)");
 
                     b.Property<int>("statusid")
