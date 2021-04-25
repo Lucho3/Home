@@ -7,12 +7,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Home.Models;
 using Home.Models.Entity;
+using System.Text;
+using Home.Models.ViewModels;
 
 namespace Home.Controllers
 {
     public class TaskModelsController : Controller
     {
         private readonly HomeDBContext _context;
+
+        private UserModel user = null;
 
         public TaskModelsController(HomeDBContext context)
         {
@@ -22,8 +26,7 @@ namespace Home.Controllers
         // GET: TaskModels
         public async Task<IActionResult> Index()
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
                 return View(await _context.Tasks.ToListAsync());
             }
@@ -37,8 +40,7 @@ namespace Home.Controllers
         // GET: TaskModels/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
                 if (id == null)
                 {
@@ -61,12 +63,15 @@ namespace Home.Controllers
         }
 
         // GET: TaskModels/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
-                return View();
+                TaskCreateViewModel tcvm = new TaskCreateViewModel();
+                tcvm.categories = await _context.Categories.ToListAsync();
+                tcvm.locations = user.locations;
+                
+                return View(tcvm);
             }
             else
             {
@@ -81,8 +86,7 @@ namespace Home.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,description,deadline,budget,picture")] TaskModel taskModel)
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
                 if (ModelState.IsValid)
                 {
@@ -101,8 +105,7 @@ namespace Home.Controllers
         // GET: TaskModels/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
                 if (id == null)
                 {
@@ -129,8 +132,7 @@ namespace Home.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,description,deadline,budget,picture")] TaskModel taskModel)
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
                 if (id != taskModel.id)
                 {
@@ -168,8 +170,7 @@ namespace Home.Controllers
         // GET: TaskModels/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
                 if (id == null)
                 {
@@ -196,8 +197,7 @@ namespace Home.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            byte[] buffer = new byte[200];
-            if (HttpContext.Session.TryGetValue("id", out buffer))
+            if (await extractUser())
             {
                 var taskModel = await _context.Tasks.FindAsync(id);
                 _context.Tasks.Remove(taskModel);
@@ -213,6 +213,22 @@ namespace Home.Controllers
         private bool TaskModelExists(int id)
         {
             return _context.Tasks.Any(e => e.id == id);
+        }
+
+        [NonAction]
+        private async Task<bool> extractUser()
+        {
+            byte[] buffer = new byte[200];
+            if (HttpContext.Session.TryGetValue("id", out buffer))
+            {
+                int userId = int.Parse(Encoding.UTF8.GetString(buffer));
+                user = await _context.Users.Where(u => u.id == userId).Include(u => u.tasks).Include(u => u.locations).Include(u => u.type).FirstOrDefaultAsync();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

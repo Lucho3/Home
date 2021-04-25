@@ -14,6 +14,11 @@ namespace Home.Models.Entity
         [Column(TypeName = "int")]
         public int id { get; set; }
 
+        [Column(TypeName = "nvarchar(200)")]
+        [Required]
+        [Display(Name = "Enter name:")]
+        public string name { get; set; }
+
         [Column(TypeName = "text")]
         [Required]
         [Display(Name = "Enter description:")]
