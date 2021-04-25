@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Home.Models.Entity
 {
-    public class CategoryModel
+    public class StatusModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,7 +15,8 @@ namespace Home.Models.Entity
         public int id { get; set; }
 
         [Column(TypeName = "nvarchar(200)")]
-        [Required(ErrorMessage = "Tyepe is required field!")]
-        public string type { get; set; }
+        [Required]
+        public string status { get; set; }
+
     }
 }
