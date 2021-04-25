@@ -39,7 +39,7 @@ namespace Home.Models.Entity
         [Required(ErrorMessage = "Status is required field!")]
         public StatusModel status { get; set; }
 
-        [Required]
+        
         public byte[] picture { get; set; }
     }
 }
