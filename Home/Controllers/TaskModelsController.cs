@@ -28,7 +28,7 @@ namespace Home.Controllers
         {
             if (await extractUser())
             {
-                return View(await _context.Tasks.ToListAsync());
+                return View(await _context.Tasks.Include(u => u.user).Include(u => u.status).Where(u => u.user == this.user).ToListAsync());
             }
             else
             {
@@ -62,19 +62,7 @@ namespace Home.Controllers
             }
         }
 
-        public async Task<IActionResult> MyTasks()
-        {
-            if (await extractUser())
-            {
-                List<TaskModel> tm = await _context.Tasks.Include(u => u.user).Include(u=>u.status).Where(u => u.user == this.user).ToListAsync(); ;
-
-                return View(tm);
-            }
-            else
-            {
-                return RedirectToAction("Index", "LogIn");
-            }
-        }
+        
         public async Task<IActionResult> Decline(int? id)
         {
             if (await extractUser())

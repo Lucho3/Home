@@ -5,18 +5,18 @@
     Layout = "~/Views/Shared/_LayoutLogged.cshtml";
 }
 
-<h1>All Tasks</h1>
+<h1>My Tasks</h1>
 
 <p>
     <a asp-action="Create">Create New Task</a>
 </p>
 
-<p>
-    <a asp-action="MyTasks">My Tasks</a>
-</p>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.name)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.description)
             </th>
@@ -30,8 +30,12 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.description)
             </td>
@@ -42,11 +46,24 @@
                 @Html.DisplayFor(modelItem => item.budget)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+                @if (item.status.status == "Waiting")
+                {
+                    <a asp-action="Decline" asp-route-id="@item.id">Decline</a> <Span>|</Span>
+                }
+
+                @if (item.status.status == "For review")
+                {
+                    <a asp-action="Done" asp-route-id="@item.id">Done</a> <Span>|</Span>
+                }
+
+                @if (item.status.status == "Waiting")
+                {
+                    <a asp-action="Edit" asp-route-id="@item.id">Edit</a> <Span>|</Span>
+                }
                 <a asp-action="Details" asp-route-id="@item.id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
             </td>
         </tr>
-}
+        }
     </tbody>
 </table>

@@ -16,12 +16,12 @@ namespace Home.Models.Entity
 
         [Column(TypeName = "nvarchar(200)")]
         [Required]
-        [Display(Name = "Enter name:")]
+        [Display(Name = "name:")]
         public string name { get; set; }
 
         [Column(TypeName = "text")]
         [Required]
-        [Display(Name = "Enter description:")]
+        [Display(Name = "description:")]
         public string description { get; set; }
 
         [Required]
