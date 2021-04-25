@@ -37,13 +37,20 @@ namespace Home.Models
 
             modelBuilder.Entity<LocationModel>().HasIndex(u => u.name).IsUnique();
 
-            modelBuilder.Entity<UserModel>()
-                            .Property(b => b.type)
-                            .HasDefaultValueSql("3");
+            modelBuilder.Entity<TaskModel>()
+            .HasOne(p => p.user)
+            .WithMany(q => q.tasks)
+            .HasConstraintName("FK_Tasks_Users_userid");
 
             //Cascade
 
             modelBuilder.Entity<UserModel>().HasMany(r => r.tasks).WithOne(r => r.user).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TaskModel>().HasOne(r => r.user).WithMany(r => r.tasks).OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<TaskModel>().HasOne(r => r.category).WithMany(r => r.tasks).OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<TaskModel>().HasOne(r => r.status).WithMany(r => r.tasks).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<UserModel>().HasMany(t => t.locations).WithOne(r => r.user).OnDelete(DeleteBehavior.Cascade);
 
